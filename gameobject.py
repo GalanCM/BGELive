@@ -4,8 +4,6 @@ from functools import partial
 from bge import logic, types, events
 from mathutils import Vector, Matrix
 
-from live.helpers import get_scene
-
 from math import radians
 
 class FunctionQueue():
@@ -57,7 +55,7 @@ class FunctionQueue():
 	def _run(self):
 		"""Run the queue"""
 		for queue_item in self._queue.values():
-			pause_states = get_scene().get('pause_states')
+			pause_states = logic.getCurrentScene().get('pause_states')
 			if pause_states == [] or pause_states == None:
 				queue_item[0]()
 			else:
@@ -78,7 +76,7 @@ class Live_GameObject(types.KX_GameObject):
 
 	def __del__(self):
 		#remove the object from type lists
-		scene = get_scene()
+		scene = logic.getCurrentScene()
 		for type_str in self.types:
 			if self in scene['types'][type_str]:
 				scene['types'][type_str].remove(self)
@@ -95,7 +93,7 @@ class Live_GameObject(types.KX_GameObject):
 		:param string type_str: The name of the type to add to the object
 		"""
 		self.types += [type_str]
-		scene = get_scene()
+		scene = logic.getCurrentScene()
 		if scene:
 			if 'types' not in scene:
 				scene['types'] = {}

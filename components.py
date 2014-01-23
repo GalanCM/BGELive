@@ -2,14 +2,13 @@ from live.helpers import Timer
 from bge import logic
 
 from mathutils import Vector
-from math import degrees
 
 def timed(fun, time, next_fun=None):
 	"""A component that runs another component for a fixed length of time. Can optionally be given a follow-up component for chaining.
 
-	:param callable fun: the component to be run:
-	:param number time: the amount of time to run the component
-	:keyword callable next_fun: a component to run after the timed component is finished
+	   :param callable fun: The component to be run:
+	   :param number time: The amount of time to run the component
+	   :keyword callable next_fun: A component to run after the timed component is finished
 	"""
 	timer = Timer(time)
 	def timed_callback(self, id):
@@ -26,25 +25,27 @@ def timed(fun, time, next_fun=None):
 def suspend(time, next_fun):
 	"""A component that suspends a component currently in the component list for a fixed length of time. Can optionally be given a different component to be run after the suspension is lifted.
 
-	:param number time: the amount of time to run the component
-	:keyword callable next_fun: a component to run after the suspension is lifted
+	   :param number time: The amount of time to run the component
+	   :keyword callable next_fun: A component to run after the suspension is lifted
 	"""
 	def suspend_callback(self, id):
 		pass
 	return timed(suspend_callback, time, next_fun )
 
-def move_to(self, target, **kwargs):
+def move_to(obj, target, **kwargs):
 	"""Move the object to a target position. Can be done using speed, time, or acceleration, but no combination of them.
+	   Note: object can still be moved by other applyMovement() calls.
 
-	:param 3D Vector target: the world position to move to
+	   :param KX_GameObject obj: The object to move
+	   :param 3D Vector target: The world position to move to
 
-	:keyword number speed: the velocity to move at. In blender units per second
+	   :keyword number speed: The velocity to move at. In blender units per second
 
-	:keyword number time: How long you want the object to take to reach its target. In seconds. Speed will be automaticly calculated
+	   :keyword number time: How long you want the object to take to reach its target. In seconds. Speed will be automaticly calculated
 
-	:keyword number acceleration: How quickly you want the object to accelerate. In blender units per second per second.
-	:keyword number start_speed: (optional) (for acceleration) Initial speed for the object to move at. In blender units per second.
-	:keyword number max_speed: (optional) (for acceleration) Speed at which to stop acceleration. In blender units per second.
+	   :keyword number acceleration: How quickly you want the object to accelerate. In blender units per second per second.
+	   :keyword number start_speed: (optional) (for acceleration) Initial speed for the object to move at. In blender units per second.
+	   :keyword number max_speed: (optional) (for acceleration) Speed at which to stop acceleration. In blender units per second.
 	"""
 	if 'accel' in kwargs:
 		for key in kwargs.keys():
@@ -77,13 +78,13 @@ def move_to(self, target, **kwargs):
 			if key != 'speed':
 				raise TypeError('%s is an invalid keyword argument for this function' % key)
 		speed = kwargs['speed'] / (logic.getLogicTicRate()+1.0)
-		return move_to(self, target, accel=0, start_speed=speed, max_speed=speed)
+		return move_to(obj, target, accel=0, start_speed=speed, max_speed=speed)
 
 	elif 'time' in kwargs:
 		for key in kwargs:
 			if key != 'time':
 				raise TypeError('%s is an invalid keyword argument for this function' % key)
-		speed = self.getDistanceTo(target) / kwargs['time']
-		return move_to(self, target, speed=speed)
+		speed = obj.getDistanceTo(target) / kwargs['time']
+		return move_to(obj, target, speed=speed)
 
 	return move_callback

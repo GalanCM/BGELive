@@ -17,11 +17,11 @@ class FunctionQueue():
 	def set(self, fun, *args, **kwargs):
 		"""Set a component.
 
-			:param function fun: function to use as component
-			:keyword hashable id: [optional] a hashable value used to reference the component 
+			:param function fun: Function to use as component.
+			:keyword hashable id: [optional] A hashable value used to reference the component.
 			Additional arguments to be used by the component may also be passed in. These arguments will be passed to the component each time it is called.
 
-			:return: the reference id used for the component. If one is passed in by the user, this will be returned. Otherwise, it will be a randomly generated integer
+			:return: The reference id used for the component. If one is passed in by the user, this will be returned. Otherwise, it will be a randomly generated integer.
 			:rtype: int or other hashable
 		"""
 		if 'id' in kwargs:
@@ -35,11 +35,11 @@ class FunctionQueue():
 		return id
 
 	def get(self, id):
-		"""Retrieve a function from the component list
+		"""Retrieve a function from the component list.
 
-		:param hashable id: the id of the function to return
+		:param hashable id: The id of the function to return.
 
-		:return: The function stored in the queue with the given id
+		:return: The function stored in the queue with the given id.
 		:rtype: function
 		"""
 
@@ -48,7 +48,7 @@ class FunctionQueue():
 	def remove(self, id):
 		"""Remove a function from the component list
 
-		:param hashable id: the id of the function to remove
+		:param hashable id: The id of the function to remove.
 		"""
 		self._garbage.append(id)
 
@@ -90,7 +90,7 @@ class Live_GameObject(types.KX_GameObject):
 	def set_type(self, type_str):
 		"""Add a type to the object's .types list, and add it to a scene-wide list off object of the same type, stored in bge.logic.getCurrentScene()['types'][type_str]. Objects may have multiple types.
 
-		:param string type_str: The name of the type to add to the object
+		:param string type_str: The name of the type to add to the object.
 		"""
 		self.types += [type_str]
 		scene = logic.getCurrentScene()
@@ -104,7 +104,7 @@ class Live_GameObject(types.KX_GameObject):
 	def applyMovement(self, movement, *args, per_second=False):
 		"""Sets the game object's movement
 
-		:keyword boolean per_second: Whether or not the movement should be in blender units per second instead of per frame
+		:keyword boolean per_second: Whether or not the movement should be in blender units per second instead of per frame.
 		"""
 		if per_second == True:
 			movement = Vector(movement) / ( logic.getLogicTicRate() + 1 )
@@ -115,7 +115,7 @@ class Live_GameObject(types.KX_GameObject):
 	def applyRotation(self, rotation, *args, per_second=False):
 		"""Sets the game object's rotation
 
-		:keyword per_second: if 'degrees' rotate in degrees per second. if 'radians' rotate in radians per second. If not set radians per frame
+		:keyword per_second: If 'degrees' rotate in degrees per second. if 'radians' rotate in radians per second. If not set radians per frame.
 		"""
 		if per_second == "radians" or per_second == "degrees" or per_second is True:
 			rotation = Vector(rotation) / ( logic.getLogicTicRate() + 1 )
@@ -124,9 +124,9 @@ class Live_GameObject(types.KX_GameObject):
 		super().applyRotation(rotation, *args)
 
 	def applyScale(self, scale, *args, per_second=False):
-		"""Sets the game object's scale
+		"""Sets the game object's scale.
 
-		:keyword boolean per_second: Whether or not the scaling should be in blender units per second instead of per frame
+		:keyword boolean per_second: Whether or not the scaling should be in blender units per second instead of per frame.
 		"""
 		if per_second == True:
 			scale = Vector(scale) / ( logic.getLogicTicRate() + 1 )

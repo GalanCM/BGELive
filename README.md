@@ -29,7 +29,7 @@ For this example, we will write a simple object that takes damage on colliding w
 In the game engine, this might typically be accomplished like this, assuming that there is a timer named `timer`:
 
 ```python
-class player():
+class player(KX_GameObject):
   def __init__(self):
     self.health = 100:
   
@@ -42,7 +42,8 @@ class player():
 Using BGELive, one might write it like this:
 
 ```python
-class player():
+from live.gameobject import Live_GameObject
+class player(Live_GameObject):
   def __init__(self):
     self.logic_components.set( collide() )
     

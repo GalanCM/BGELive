@@ -202,6 +202,37 @@ self.applyRotatation([0,0,pi], units="radians")
 self.applyScale([1,1,1], True, per_frame=True)
 ```
 
+### The Component Library
+A handful of premade components are currently availible in the live.components module:
+##### timed()
+```python
+# The timed component allows you to run a component for a fixed length of time (in seconds) before it is removed from the object:
+self.logic_components.set( timed( MY_COMPONENT, 5 ) )
+# Instead of removing the component from the object, you could replace it with another one using the next_fun argument:
+self.logic_components.set( timed( MY_COMPONENT, 5, next_fun=OTHER_COMPONENT ) )
+```
+##### suspend()
+```python
+# If you want to have a component pause for a period of time, before reactivation, you can use the suspend() component
+self.logic_components.set( suspend( 5, self.logic_components.get(ID), id=ID ) )
+```
+##### move_to()
+The move_to() component can be used to move and object to a given point in world space via one of three criteria: speed, time, and acceleration.
+```python
+# To move the object at a given number of Blender units per second, use the 'speed' keyword:
+self.logic_components.set( move_to( [1,1,0], speed = 0.1) )
+
+# If you want an object to reach the point in a given number of seconds, use the 'time' keyword:
+self.logic_components.set( move_to( [1,1,0], time = 10) )
+
+# And if you want the object to accelerate  to the point ( in Blender units/second/second), use 'accel':
+self.logic_components.set( move_to( [1,1,0], accel = 0.01) )
+# You can optional set a start speed for the object with 'current_speed':
+self.logic_components.set( move_to( [1,1,0], accel = 0.01, current_speed = 0.1) )
+# Or a maximum speed with 'max_speed':
+self.logic_components.set( move_to( [1,1,0], accel = 0.01, max_speed = 0.1) )
+```
+
 ### Helpers
 BGELive also provides a series of helpers for common tasks in the live.helpers module:
 ##### The Timer object
@@ -229,3 +260,4 @@ object = find_object( 'ORIGINAL_NAME', list=OBJECT_LIST)
 object_list = find_objects( 'ORIGINAL_NAME' )
 # You can also use find_object() on other object lists:
 object_list = find_objects( 'ORIGINAL_NAME', list=OBJECT_LIST)
+```

@@ -200,3 +200,32 @@ self.applyRotatation([0,0,pi], units="radians")
 ```python
 # A new applyScale() method has been added. Arguments are the same as for applyMovement():
 self.applyScale([1,1,1], True, per_frame=True)
+```
+
+### Helpers
+BGELive also provides a series of helpers for common tasks in the live.helpers module:
+##### The Timer object
+```python
+# The Timer class provides simple countdown timers that can be created and deleted on the fly.
+# Time is given in seconds:
+timer = Timer( SECONDS )
+# Getting the timer will give you the time remaining on the timer, so the timer:
+ten_seconds = Timer( 10 )
+# would return 5.5 in 4½ seconds, and 0.0 in 11 seconds
+```
+##### Name cleaning
+When you duplicate an object in the Blender editor, it is given a new name automatically. For example, duplicating the object 'Cube' in a new file will result in the object 'Cube.001'. This can become problematic when looking for an object by name in the Game Engine. BGELive provides several helpers to make this easier.
+```python
+# If you want to get the clean name of an object, you can use the clean_name() function,
+# which will return the name minus any auto-generated cruft
+original_name = clean_name(obj)
+
+# For finding an object in the scene, you can use the find_object() function:
+object = find_object( 'ORIGINAL_NAME' )
+# You can also use find_object() on other object lists:
+object = find_object( 'ORIGINAL_NAME', list=OBJECT_LIST)
+
+# To retrieve more than on object, you can use find_objects:
+object_list = find_objects( 'ORIGINAL_NAME' )
+# You can also use find_object() on other object lists:
+object_list = find_objects( 'ORIGINAL_NAME', list=OBJECT_LIST)

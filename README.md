@@ -71,8 +71,69 @@ Installation is easy:
 
 1. Download the zip file from the sidebar on the left
 
-2. Drop it into you project's script folder
+2. Drop the `live` folder into you project's script folder
 
 3. __That's it__
 
 ## Basic Usage
+
+You can start by using the following template to convert a KX\_GameObject into a Live\_GameObject 
+
+```python
+from bge import logic
+
+from live import Live_GameObject
+
+class YOUR_OBJECT_NAME (Live_GameObject):
+  def __init__(self, obj):
+  	super().__init__(obj)
+
+def run():
+  obj = logic.getCurrentController().owner
+  if type(obj) == KX_GameObject:
+    obj = YOUR_OBJECT_NAME( obj )
+	obj.run()
+```
+
+### Core Features
+#### Setting components
+```python
+# Add a compenent to your object:
+self.logic_components.set( MY_COMPONENT )
+
+#You can save an id reference to an object by assigning the return value from the function to a variable:
+id = self.logic_components.set( MY_COMPONENT )
+# Or you can set one manually:
+self.logic_components.set( MY_COMPONENT, id='a component' )
+```
+
+#### Structure of a component
+```python
+# A component callback, at its simplest, if a function that takes two arguments—
+# the object to which the compenent is attached, and an id that references the component (we will get to uses for this later):
+def MY_COMPONENT(obj, id):
+  pass
+  
+# If you want to give the component additional arguments, you can use a callable object, instead:
+class MY_CLASS_COMPONENT():
+  def __init__(self, MY_ARGUMENT):
+    self.MY_VARIABLE = MY_ARGUMENT
+  def __call__(self, obj, id):
+    # do something with self.MY_VARIABLE
+# You can—of course—change this variable:
+  ...
+  def __call__(self, obj, id)
+    self.MY_VARIABLE += 1
+# Make sure you pass in an instance of the object to logic_callbacks in order to make sure it's __call__ed correctly
+self.logic_components.set( MY_CLASS_COMPONENT( MY_ARGUMENT ) )
+    
+# You can also use other methods of saving variables to your component. I'm fond of closures:
+def MY_CLOSURE( MY_ARGUMENT1, MY_ARGUMENT2 ):
+  def MY_COMPONENT(self, id):
+    # do something with MY_ARGUMENT1
+    nonlocal MY_ARGUMENT2
+    MY_ARGUMENT2 += 1
+  return MY_COMPONENT
+# Similar to the above, you'll need to pass in the inner function by calling the other one:
+self.logic_components.set( MY_CLOSURE( MY_ARGUMENT1, MY_ARGUMENT2 ) )
+```

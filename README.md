@@ -124,7 +124,7 @@ class MY_CLASS_COMPONENT():
   ...
   def __call__(self, obj, id)
     self.MY_VARIABLE += 1
-# Make sure you pass in an instance of the object to logic_callbacks in order to make sure it's __call__ed correctly
+# Make sure you pass in an instance of the object to logic_callbacks in order to make sure it's __call__ed correctly:
 self.logic_components.set( MY_CLASS_COMPONENT( MY_ARGUMENT ) )
     
 # You can also use other methods of saving variables to your component. I'm fond of closures:
@@ -141,7 +141,7 @@ self.logic_components.set( MY_CLOSURE( MY_ARGUMENT1, MY_ARGUMENT2 ) )
 #### Removing components from a object
 ```python
 # Now we get to the primary use for callback ids, removing components.
-# Doing so is simple.
+# Doing so is simple:
 self.logic_components.remove(id)
 
 # This can be done from outside of a component, or within:
@@ -151,13 +151,52 @@ def self_removing_component(obj, id);
 
 #### Retrieving components from an object
 ```python
-# Id's can also be used to retrieve a callback from an object
+# Id's can also be used to retrieve a callback from an object:
 component = self.logic_components.get(id)
 
-# This could be useful if you want to interrupt a component briefly
+# This could be useful if you want to interrupt a component briefly:
 def interrupting_closure(fun):
 	def interrupting_component(obj, id):
 		obj.logic_components.set(fun, id=id)
 ...
 self.logic_components.add( interupting_closure( self.logic_components.get(ID) ), id=ID)
 ```
+
+#### Pausing components at scene level
+```python
+# Compenents can be paused at scene level by adding a list of states to pause in via the 'pause_when' arugment when setting an argument:
+self.logic_components.set( MY_COMPONENT, pause_when = ['scene_pause', 'cutscene'] )
+
+# The pause state can then be set in the scene dictionary:
+logic.getCurrentScene['pause_state'] = 'cutscene'
+
+# By using multiple states, you could have diffent components pause in different circumstances.
+# During a cutscene, for example, you might want to have your player no longer accept movement input, but still
+# follow cutscene scripts. Meanwhile, both components should pause when the player hits the pause button:
+self.logic_components.set( controls, pause_when = ['scene_pause', 'cutscene'] )
+self.logic_components.set( cutscene_script, pause_when = ['scene_pause'] )
+
+```
+
+### Other Features of Live_GameObject
+
+In addition to logic components, Live\_GameObject expands upon the existing feature set of KX\_GameObject.
+
+#### Tranforms
+##### applyMovement() and applyRotation per_second
+```python
+# Both of these method been given the keyword argument per_second, allowing them to transform the objects in 
+# blender_units and radians per second, respecively, instead of per frame:
+self.applyMovement([1,1,0], per_frame=True)
+self.applyRotatation([0,0,pi], per_frame=True)
+```
+##### applyRotation() units
+```python
+# You can now specify whether to use degrees or radians for applyRotation():
+self.applyRotation([0,0,180], units="degrees")
+self.applyRotatation([0,0,pi], units="radians")
+```
+##### applyScale()
+```python
+# A new applyScale() method has been added. Arguments are the same as for applyMovement():
+self.applyScale([1,1,1], True, per_frame=True)

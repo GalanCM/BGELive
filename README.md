@@ -4,7 +4,7 @@ BGELive
 A callback-based component framework built the Blender Game Engine's Python api.
 
 
-# Why use BGELive?
+## Why use BGELive?
 
 The Blender Game Engine has a very powerful python api, allowing the programmer to do nearly anything they might want to with the game engine, and is surprisingly flexible, allowing for a wide range of coding styles. This power and flexibility, however, comes at the cost of complexity: The engine provides little in the way of flow control, and writing simple, reuseable code can be complicated. In addition, keeping track of states in the game engine can become complicated in real-world use cases.
 
@@ -65,3 +65,14 @@ While this may seem like more code at first, it does several things that are use
 
 ### But I like the way the Blender Game Engine works now!
 That's fair, and you don't have to use BGELive if you don't want to. However, BGELive expands on the Blender Game Engine in other ways too, adding new features to KX_GameObject, such as new options for the applyMovement and applyRotation methods, and a new applyScale method, and more will be added in the future. Best of all, since BGELive is built on top of the current api, you can take advantage of these without changing your coding style.
+
+## Installation
+Installation is easy:
+
+1. Download the zip file from the sidebar on the left
+
+2. Drop it into you project's script folder
+
+3. __That's it__
+
+## Basic Usage

@@ -96,7 +96,7 @@ def run():
 ```
 
 ### Core Features
-#### Setting components
+#### Setting an object's components
 ```python
 # Add a compenent to your object:
 self.logic_components.set( MY_COMPONENT )
@@ -129,11 +129,35 @@ self.logic_components.set( MY_CLASS_COMPONENT( MY_ARGUMENT ) )
     
 # You can also use other methods of saving variables to your component. I'm fond of closures:
 def MY_CLOSURE( MY_ARGUMENT1, MY_ARGUMENT2 ):
-  def MY_COMPONENT(self, id):
+  def MY_COMPONENT(obj, id):
     # do something with MY_ARGUMENT1
     nonlocal MY_ARGUMENT2
     MY_ARGUMENT2 += 1
   return MY_COMPONENT
 # Similar to the above, you'll need to pass in the inner function by calling the other one:
 self.logic_components.set( MY_CLOSURE( MY_ARGUMENT1, MY_ARGUMENT2 ) )
+```
+
+#### Removing components from a object
+```python
+# Now we get to the primary use for callback ids, removing components.
+# Doing so is simple.
+self.logic_components.remove(id)
+
+# This can be done from outside of a component, or within:
+def self_removing_component(obj, id);
+	obj.logic_components.remove(id)
+```
+
+#### Retrieving components from an object
+```python
+# Id's can also be used to retrieve a callback from an object
+component = self.logic_components.get(id)
+
+# This could be useful if you want to interrupt a component briefly
+def interrupting_closure(fun):
+	def interrupting_component(obj, id):
+		obj.logic_components.set(fun, id=id)
+...
+self.logic_components.add( interupting_closure( self.logic_components.get(ID) ), id=ID)
 ```

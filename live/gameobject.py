@@ -108,19 +108,18 @@ class Live_GameObject(types.KX_GameObject):
 		"""
 		if per_second == True:
 			movement = Vector(movement) / ( logic.getLogicTicRate() + 1 )
-		else:
-			raise TypeError
 		super().applyMovement(movement, *args)
 
-	def applyRotation(self, rotation, *args, per_second=False):
+	def applyRotation(self, rotation, *args, per_second=False, units="radians"):
 		"""Sets the game object's rotation
 
-		:keyword per_second: If 'degrees' rotate in degrees per second. if 'radians' rotate in radians per second. If not set radians per frame.
+		:keyword boolean per_second: Whether or not the movement should be in units per second instead of per frame. Defaults to True.
+		:keyword str units: The units to use for rotation: radians or degrees. Defaults to radians.
 		"""
-		if per_second == "radians" or per_second == "degrees" or per_second is True:
+		if per_second == True:
 			rotation = Vector(rotation) / ( logic.getLogicTicRate() + 1 )
-			if per_second == "degrees":
-				rotation = [ radians(axis) for axis in rotation ]
+		if units == "degrees":
+			rotation = [ radians(axis) for axis in rotation ]
 		super().applyRotation(rotation, *args)
 
 	def applyScale(self, scale, *args, per_second=False):

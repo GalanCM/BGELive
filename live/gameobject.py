@@ -1,7 +1,7 @@
 from random import getrandbits
 from functools import partial
 
-from bge import logic, types, events
+from bge import logic, types
 from mathutils import Vector, Matrix
 
 from math import radians
@@ -52,12 +52,15 @@ class FunctionQueue():
 		"""
 		self._garbage.append(id)
 
-	def _run(self):
+	def _run(self, *args):
 		"""Run the queue"""
 		for queue_item in self._queue.values():
 			pause_states = logic.getCurrentScene().get('pause_states')
 			if pause_states == [] or pause_states == None:
-				queue_item[0]()
+				if len(args) == 0:
+					queue_item[0]()
+				else: #is collision_component
+					queue_item[0](*args)
 			else:
 				pause_this = False
 				for state in pause_states:
@@ -72,6 +75,8 @@ class FunctionQueue():
 class Live_GameObject(types.KX_GameObject):
 	def __init__(self, obj):
 		self.logic_components = FunctionQueue(self)
+		self.collision_components = FunctionQueue(self)
+		self.collisionCallbacks.append(self.collision_components._run)
 		self.types = []
 
 	def __del__(self):

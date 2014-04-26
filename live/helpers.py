@@ -46,6 +46,8 @@ def clean_name(obj):
 	"""
 	if name_suffix_regex.search(obj.name) != None:
 		return obj.name[0:-4]
+	else:
+		return obj.name
 
 def find_object(name, list=logic.getCurrentScene().objects):
 	"""Retrieve an object from a list with a given clean_name.

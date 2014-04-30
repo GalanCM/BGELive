@@ -19,7 +19,7 @@ def timed(fun, time, next_fun=None):
 				correct_queue = self.collision_components
 
 			if next_fun:
-				correct_queue.set(next_fun, id=id)
+				correct_queue.add(next_fun, id=id)
 			else:
 				correct_queue.remove(id)
 	return timed_callback

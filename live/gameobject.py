@@ -3,6 +3,7 @@ from functools import partial
 
 from bge import logic, types
 from mathutils import Vector, Matrix
+import aud
 
 from math import radians
 
@@ -14,7 +15,7 @@ class FunctionQueue():
 		if (args):
 			self.owner = args[0]
 
-	def set(self, fun, *args, **kwargs):
+	def add(self, fun, *args, **kwargs):
 		"""Set a component.
 
 			:param function fun: Function to use as component.
@@ -74,6 +75,12 @@ class FunctionQueue():
 			# except KeyError:
 			# 	pass
 		self._garbage = []
+
+class SFXCollection():
+	def __init__(self):
+		self.sfx = []
+
+	def add()
 
 class Live_GameObject(types.KX_GameObject):
 	def __init__(self, obj):

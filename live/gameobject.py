@@ -69,14 +69,20 @@ class FunctionQueue():
 				if not pause_this:
 					queue_item[0]()
 		for id in self._garbage:
+			# try:
 			del self._queue[id]
+			# except KeyError:
+			# 	pass
 		self._garbage = []
 
 class Live_GameObject(types.KX_GameObject):
 	def __init__(self, obj):
 		self.logic_components = FunctionQueue(self)
-		self.collision_components = FunctionQueue(self)
-		self.collisionCallbacks.append(self.collision_components._run)
+
+		if self.getPhysicsId() != 0:
+			self.collision_components = FunctionQueue(self)
+			self.collisionCallbacks.append(self.collision_components._run)
+
 		self.types = []
 
 	def __del__(self):

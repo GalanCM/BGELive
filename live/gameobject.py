@@ -76,15 +76,55 @@ class FunctionQueue():
 			# 	pass
 		self._garbage = []
 
-class SFXCollection():
-	def __init__(self):
-		self.sfx = []
+class AudioCollection():
+	def __init__(self, owner):
+		self.collection = []
+		self.owner = owner
 
-	def add()
+	def add(self, sound_file, positional=True, **kwargs):
+		if '__aud__' not in logic.globalDict:
+			self._add_aud_device()
+
+		device = logic.globalDict['__aud__']
+		sound_file = logic.expandPath("//" + sound_file)
+
+		factory = aud.Factory(sound_file)
+
+		# for kwarg in kwargs.items():
+		# 	print(kwarg)
+		# 	if kwarg[0] == 'loop':
+		# 		factory.loop(kwarg[1])
+		# 	else:
+		# 		raise AttributeError
+
+		handle = device.play( factory )
+		handle.relative = False
+		self.collection.append(handle)
+
+		return handle
+
+	def play(self, owner, id):
+		for handle in self.collection:
+			handle.location = owner.worldPosition
+
+	def set_listener(self):
+		def listener_location_update(self, id):
+			logic.globalDict['__aud__'].listener_location = self.worldPosition
+			logic.globalDict['__aud__'].listener_orientation = self.worldOrientation.to_quaternion()
+
+		self.owner.logic_components.add(listener_location_update, id='__aud_listener__')
+
+	def clear_listener(self):
+		self.owner.logic_components.remove('__aud_listener__')
+
+	def _add_aud_device(self):
+		logic.globalDict['__aud__'] = aud.device()
 
 class Live_GameObject(types.KX_GameObject):
 	def __init__(self, obj):
 		self.logic_components = FunctionQueue(self)
+		self.audio = AudioCollection(self)
+		self.logic_components.add(self.audio.play, id='__sounds__')
 
 		if self.getPhysicsId() != 0:
 			self.collision_components = FunctionQueue(self)

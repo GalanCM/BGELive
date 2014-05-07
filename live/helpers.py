@@ -80,3 +80,13 @@ def find_objects(name, list=logic.getCurrentScene().objects):
 		return results
 	else:
 		return None
+
+def frames(seconds):
+	'''Return seconds converted to frames.
+	'''
+	return seconds * logic.getLogicTicRate()
+
+def seconds(frames):
+	'''Return frames converted to seconds.
+	'''
+	return frames / logic.getLogicTicRate()

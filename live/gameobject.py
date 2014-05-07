@@ -78,57 +78,98 @@ class FunctionQueue():
 
 class AudioCollection():
 	def __init__(self, owner):
-		self.collection = []
+		self._collection = []
 		self.owner = owner
 
-	def add(self, sound_file, positional=True, **kwargs):
-		if '__aud__' not in logic.globalDict:
-			self._add_aud_device()
+		self._make_global_device()
+		self._device = logic.globalDict['__aud__']
 
-		device = logic.globalDict['__aud__']
-		sound_file = logic.expandPath("//" + sound_file)
+	def play(self, sound, positional=True, loop=0, volume=1):
+		""" Play a sound
 
-		factory = aud.Factory(sound_file)
+			:param sound: The sound to be played. If it's a string, it will build a factory from the file at that relative path, otherwise, it should be a factory.
+			:type sound: str or aud.Factory
+			:param positional: Whether or not to use 3D positional audio. Defaults to True.
+			:type positional: bool
+			:param loop: Number of times to loop the sound. Negative == infinity.
+			:type loop: int
+			:param volume: The volume. 1.0 = 100%
+			:type loop: float
+			:returns: aud.Handle handle of the sound to be played
+		"""
+		if type(sound) == str:
+			sound = logic.expandPath("//" + sound)
+			sound = aud.Factory(sound)
 
-		# for kwarg in kwargs.items():
-		# 	print(kwarg)
-		# 	if kwarg[0] == 'loop':
-		# 		factory.loop(kwarg[1])
-		# 	else:
-		# 		raise AttributeError
+		sound.loop(loop)
+		sound.volume(volume)
 
-		handle = device.play( factory )
-		handle.relative = False
-		self.collection.append(handle)
+		handle = self._device.play( sound )
+
+		# if positional == False leave relative and keep position at [0,0,0]
+		if positional == True:
+			handle.relative = False
+			self._collection.append(handle)
 
 		return handle
 
-	def play(self, owner, id):
-		for handle in self.collection:
-			handle.location = owner.worldPosition
-
 	def set_listener(self):
+		""" Set the current object to be the listener for its current device. If no object is set, the listener will be fixed at [0,0,0].
+			Make sure to unset the current listener before setting a new one.
+		"""
 		def listener_location_update(self, id):
-			logic.globalDict['__aud__'].listener_location = self.worldPosition
-			logic.globalDict['__aud__'].listener_orientation = self.worldOrientation.to_quaternion()
+			logic._device.listener_location = self.worldPosition
+			logic._device.listener_orientation = self.worldOrientation.to_quaternion()
 
 		self.owner.logic_components.add(listener_location_update, id='__aud_listener__')
 
 	def clear_listener(self):
+		""" Set the object to no longer be the listener. If no replacement listener is set, the listeners position with be the last postition used while the listener wsa set.
+		"""
 		self.owner.logic_components.remove('__aud_listener__')
 
-	def _add_aud_device(self):
-		logic.globalDict['__aud__'] = aud.device()
+	def get_device(self):
+		"""	Returns a reference to the current aud device being used by the object.
+
+			:returns: aud.Device
+		"""
+		return self._device
+
+	def set_device(self, device):
+		""" Set the object to use a specific aud device. If none is set, the object will use a shared global device saved at logic.globalDict['__aud__']. It is recommended to access it via get_device().
+		"""
+		self._device = device
+		for handle in self._collection:
+			handle.stop()
+		self._collection = []
+
+	def _make_global_device(self):
+		""" Makes the global device at logic.globalDict['__aud__']
+		"""
+		if '__aud__' not in logic.globalDict:
+			logic.globalDict['__aud__'] = aud.device()
+
+	def _update(self, owner, id):
+		""" Logic_component (id='__audio__'): Updates the data for all sounds used by the object. This include the position of the sound, and removing sounds that are no longer playing.
+		"""
+		for i in range( len(self._collection) ):
+			if self._collection[i].status == False:
+				self._collection.pop(i)
+			else:
+				self._collection[i].location = owner.worldPosition
 
 class Live_GameObject(types.KX_GameObject):
 	def __init__(self, obj):
 		self.logic_components = FunctionQueue(self)
 		self.audio = AudioCollection(self)
-		self.logic_components.add(self.audio.play, id='__sounds__')
+		self.logic_components.add(self.audio._update, id='__audio__')
 
 		if self.getPhysicsId() != 0:
 			self.collision_components = FunctionQueue(self)
 			self.collisionCallbacks.append(self.collision_components._run)
+
+			self.hitObjectList = []
+			self.collision_components.add(self._add_to_hitObjectList)
 
 		self.types = []
 
@@ -144,6 +185,10 @@ class Live_GameObject(types.KX_GameObject):
 	def run(self):
 		"""Run the object's components"""
 		self.logic_components._run()
+
+		#clear hitObjectList
+		if self.getPhysicsId() != 0:
+			self.hitObjectList.clear()
 
 	def set_type(self, type_str):
 		"""Add a type to the object's .types list, and add it to a scene-wide list off object of the same type, stored in bge.logic.getCurrentScene()['types'][type_str]. Objects may have multiple types.
@@ -197,6 +242,12 @@ class Live_GameObject(types.KX_GameObject):
 				                   [   0,   0,s[2],   0],
 				                   [   0,   0,   0,   1]  ])
 			self.localTransform += scale_matrix * self.localOrientation.to_4x4()
+
+	@staticmethod
+	def _add_to_hitObjectList(self, id, collider):
+		"""Collision component used to manage hitObjectList"""
+		self.hitObjectList.append(collider)
+
 
 def init():
 	obj = logic.getCurrentController().owner

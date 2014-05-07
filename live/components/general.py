@@ -29,27 +29,42 @@ def suspend(time, next_fun):
 		pass
 	return timed(suspend_callback, time, next_fun )
 
-def uncollide(obj, targets, callback):
-	class collision_callback():
-		def __init__(self, targets):
-			self._targets = targets
-			self._hit = False
-		def __call__(self, obj, id, collider):
-			for target in self._targets:
-				print(clean_name(collider))
-				if collider == target or clean_name(collider) == target:
-					self._hit = True
+def uncollide(targets, function):
+	''':param targets: Can be str or GameObject
+	'''
+	def uncollide_callback(self, id):
+		for obj in self.hitObjectList:
+			for target in targets:
+				if type(target) == str and obj.name == target:
+					return
+				elif type(target) != str and obj.name == target.name:
+					return
 
-	class logic_callback():
-		def __init__(self, callback, collision_id):
-			self._collision_id = collision_id
-			self._callback = callback
-		def __call__(self, obj, id):
-			if not obj.collision_components.get(self._collision_id)._hit:
-				self._callback(obj, id)
-			obj.collision_components.get(self._collision_id)._hit = False
+		function(self, id)
+
+	return uncollide_callback
+
+# def uncollide(obj, targets, callback):
+# 	class collision_callback():
+# 		def __init__(self, targets):
+# 			self._targets = targets
+# 			self._hit = False
+# 		def __call__(self, obj, id, collider):
+# 			for target in self._targets:
+# 				print(clean_name(collider))
+# 				if collider == target or clean_name(collider) == target:
+# 					self._hit = True
+
+# 	class logic_callback():
+# 		def __init__(self, callback, collision_id):
+# 			self._collision_id = collision_id
+# 			self._callback = callback
+# 		def __call__(self, obj, id):
+# 			if not obj.collision_components.get(self._collision_id)._hit:
+# 				self._callback(obj, id)
+# 			obj.collision_components.get(self._collision_id)._hit = False
 
 
 
-	collision_id = obj.collision_components.add( collision_callback(targets) )
-	return logic_callback(callback, collision_id)
+# 	collision_id = obj.collision_components.add( collision_callback(targets) )
+# 	return logic_callback(callback, collision_id)

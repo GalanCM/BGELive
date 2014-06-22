@@ -51,11 +51,11 @@ class FunctionQueue():
 
 		:param hashable id: The id of the function to remove.
 		"""
-		self._garbage.append(id)
+		del self._queue[id]
 
 	def _run(self, *args):
 		"""Run the queue"""
-		for queue_item in self._queue.values():
+		for queue_item in list( self._queue.values() ):
 			pause_states = logic.getCurrentScene().get('pause_states')
 			if pause_states == [] or pause_states == None:
 				if len(args) == 0:
@@ -69,12 +69,6 @@ class FunctionQueue():
 						pause_this = True
 				if not pause_this:
 					queue_item[0]()
-		for id in self._garbage:
-			# try:
-			del self._queue[id]
-			# except KeyError:
-			# 	pass
-		self._garbage = []
 
 class AudioCollection():
 	def __init__(self, owner):

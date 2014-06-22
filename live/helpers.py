@@ -5,13 +5,13 @@ import re
 name_suffix_regex = re.compile('\.[0-9]{3}$')
 
 class Timer():
-	'''A timer that takes in time in seconds, and counts down to zero. 
+	'''A timer that takes in time in seconds, and counts down to zero.
 
 	:param number seconds: The time for the Timer to run in seconds.
 	:returns: Time remaining in seconds; 0.0 when finished
 	:rtype: floar
 	'''
-	
+
 	def __init__(self, seconds = 0.0):
 		self._time_of_end = time() + seconds #set the time() at which the timer == 0.0
 
@@ -49,7 +49,7 @@ def clean_name(obj):
 	else:
 		return obj.name
 
-def find_object(name, list=logic.getCurrentScene().objects):
+def find_object(name, obj_list=logic.getCurrentScene().objects):
 	"""Retrieve an object from a list with a given clean_name.
 	   Use to prevent missing duplicate objects, as they are automatically renamed by Blender when added in the editor
 
@@ -58,28 +58,33 @@ def find_object(name, list=logic.getCurrentScene().objects):
 	   :returns: The first object found with the given name.
 	   :rtype: KX_GameObject
 	"""
-	for obj in list:
+	for obj in obj_list:
 		if name == obj.name or name == clean_name(obj):
 			return obj
 	return None
 
-def find_objects(name, list=logic.getCurrentScene().objects):
+def find_objects(target, obj_list=logic.getCurrentScene().objects, by="name"):
 	"""Retrieve all objects from a list with a given clean_name.
 	   Use to prevent missing duplicate objects, as they are automatically renamed by Blender when added in the editor
 
-	   :param str name: The name to look for.
-	   :param object list list: (optional) A list of objects to search. Defaults to the current scene's object list
+	   :param str target: The target to look for.
+	   :param object list obj_list: (optional) A list of objects to search. Defaults to the current scene's object list
 	   :returns: The first object found with the given name.
 	   :rtype: list of KX_GameObjects
 	"""
 	results = []
-	for obj in list:
-		if name == obj.name or name == clean_name(obj):
-			results += [obj]
-	if results != []:
-		return results
-	else:
-		return None
+
+	if by == 'name':
+		for obj in obj_list:
+			if target == obj.name or target == clean_name(obj):
+				results += [obj]
+	elif by == 'class':
+		for obj in obj_list:
+			if isinstance(obj, target):
+				results += [obj]
+
+	return results
+
 
 def frames(seconds):
 	'''Return seconds converted to frames.
